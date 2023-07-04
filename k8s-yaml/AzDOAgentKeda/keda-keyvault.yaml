@@ -1,0 +1,85 @@
+# kubectl describe scaledjob azdevops-scaledjob -n azdo
+# kubectl apply -f .\keda-keyvault.yaml
+# kubectl delete -f .\keda-keyvault.yaml
+# kubectl get scaledjob -n azdo
+
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: pipeline-trigger-auth
+spec:
+  secretTargetRef:
+    - parameter: personalAccessToken
+      name: azdevopsk8s
+      key: K8S-AZP-TOKEN
+    - parameter: organizationURL
+      name: azdevopsk8s
+      key: K8S-AZP-URL
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: azdevops-scaledjob
+  namespace: azdo
+spec:
+  jobTargetRef:
+    template:
+      spec:
+        nodeSelector:
+          kubernetes.io/os: windows
+        containers:
+        - name: azdevops-agent-job
+          image: acraksinadayrmoreirao.azurecr.io/azdowin:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1000Mi
+            limits:
+              cpu: 2000m
+              memory: 2000Mi
+          env:
+          - name: AZP_URL
+            valueFrom:
+              secretKeyRef:
+                name: azdevopsk8s
+                key: K8S-AZP-URL
+          - name: AZP_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: azdevopsk8s
+                key: K8S-AZP-TOKEN
+          - name: AZP_POOL
+            valueFrom:
+              secretKeyRef:
+                name: azdevopsk8s
+                key: K8S-AZP-POOL
+          volumeMounts:
+          - mountPath: /var/run/docker.sock
+            name: docker-volume
+          - name: secrets-store01-inline
+            mountPath: "/mnt/secrets-store"
+            readOnly: true
+        volumes:
+        - name: docker-volume
+          hostPath:
+            path: /var/run/docker.sock
+        - name: secrets-store01-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-kvname-user-msi"
+  pollingInterval: 30
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 10
+  minReplicaCount: 0
+  maxReplicaCount: 10   
+  scalingStrategy:
+    strategy: "default"               
+  triggers:
+  - type: azure-pipelines
+    metadata:
+      poolName: "k8skeda"
+      organizationURLFromEnv: "AZP_URL"
+      personalAccessTokenFromEnv: "AZP_TOKEN"

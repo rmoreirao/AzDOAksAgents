@@ -1,0 +1,14 @@
+apiVersion: v1  
+kind: Namespace  
+metadata:  
+  name: azdo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azdevops
+  namespace: azdo
+stringData:
+  AZP_TOKEN: 'vxb5xam7mn36wniw45nymkisgudqteikuv2b7fpaigo7rsbpev2a'
+  AZP_URL: 'https://dev.azure.com/rmoreiraoms'
+  AZP_POOL: 'k8skeda'
