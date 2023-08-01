@@ -1,0 +1,12 @@
+# Default values for AzDOAgentHelm.
+# This is a YAML-formatted file.
+
+azdo:
+  pat: 
+  url: 'https://dev.azure.com/rmoreiraoms'
+  pool: 
+
+container:
+  registryUrl: 'acraksinadayrmoreirao.azurecr.io'
+  imageName: 'azdowin'
+  imageTag: 'latest'

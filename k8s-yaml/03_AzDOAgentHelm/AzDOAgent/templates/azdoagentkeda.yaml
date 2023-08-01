@@ -2,7 +2,19 @@
 # kubectl apply -f .\keda.yaml
 # kubectl delete -f .\keda.yaml
 # kubectl get scaledjob -n azdo
+# kubectl get jobs -n azdo
+# kubectl get pods -n azdo
 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azdevops
+  namespace: azdo
+stringData:
+  AZP_TOKEN: {{ .Values.azdo.pat }}
+  AZP_URL: {{ .Values.azdo.url }}
+  AZP_POOL: {{ .Values.azdo.pool }}
+---
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
@@ -29,15 +41,15 @@ spec:
           kubernetes.io/os: windows
         containers:
         - name: azdevops-agent-job
-          image: acraksinadayrmoreirao.azurecr.io/azdowin:latest
+          image: {{.Values.container.registryUrl}}/{{.Values.container.imageName}}:{{.Values.container.imageTag}}
           imagePullPolicy: Always
           resources:
             requests:
-              cpu: 1000m
-              memory: 1000Mi
-            limits:
               cpu: 2000m
-              memory: 2000Mi
+              memory: 18000Mi
+            limits:
+              cpu: 4000m
+              memory: 20000Mi
           env:
           - name: AZP_URL
             valueFrom:
@@ -71,6 +83,6 @@ spec:
   triggers:
   - type: azure-pipelines
     metadata:
-      poolName: "k8skeda"
+      poolName: {{ .Values.azdo.pool }}
       organizationURLFromEnv: "AZP_URL"
       personalAccessTokenFromEnv: "AZP_TOKEN"
