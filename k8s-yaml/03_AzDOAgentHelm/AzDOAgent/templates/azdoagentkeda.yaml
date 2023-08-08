@@ -5,29 +5,6 @@
 # kubectl get jobs -n azdo
 # kubectl get pods -n azdo
 
-apiVersion: v1
-kind: Secret
-metadata:
-  name: azdevops
-  namespace: azdo
-stringData:
-  AZP_TOKEN: {{ .Values.azdo.pat }}
-  AZP_URL: {{ .Values.azdo.url }}
-  AZP_POOL: {{ .Values.azdo.pool }}
----
-apiVersion: keda.sh/v1alpha1
-kind: TriggerAuthentication
-metadata:
-  name: pipeline-trigger-auth
-spec:
-  secretTargetRef:
-    - parameter: personalAccessToken
-      name: azdevops
-      key: AZP_TOKEN
-    - parameter: organizationURL
-      name: azdevops
-      key: AZP_URL
----
 apiVersion: keda.sh/v1alpha1
 kind: ScaledJob
 metadata:
@@ -41,7 +18,7 @@ spec:
           kubernetes.io/os: windows
         containers:
         - name: azdevops-agent-job
-          image: {{.Values.container.registryUrl}}/{{.Values.container.imageName}}:{{.Values.container.imageTag}}
+          image: {{ .Values.container.registryUrl }}/{{ .Values.container.imageName }}:{{ .Values.container.imageTag }}
           imagePullPolicy: Always
           resources:
             requests:
