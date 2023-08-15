@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 
 azdo:
-  pat: "!AZDO_PAT_TOKEN!"
+  pat: "AZDO_PAT_TOKEN"
   url: 'https://dev.azure.com/rmoreiraoms'
   pool: 'k8skeda'
 
