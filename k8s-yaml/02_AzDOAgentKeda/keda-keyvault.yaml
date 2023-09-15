@@ -2,6 +2,8 @@
 # kubectl apply -f .\keda-keyvault.yaml
 # kubectl delete -f .\keda-keyvault.yaml
 # kubectl get scaledjob -n azdo
+# kubectl get jobs -n azdo
+# kubectl get pods -n azdo
 
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
@@ -83,3 +85,10 @@ spec:
       poolName: "k8skeda"
       organizationURLFromEnv: "AZP_URL"
       personalAccessTokenFromEnv: "AZP_TOKEN"
+  # Add this trigger to Downscale the ScaledJob to 0 replicas - for example: at night or on weekends
+  # - type: cron
+  #   metadata:
+  #     timezone: "Europe/Amsterdam"
+  #     start: 55 * * * *
+  #     end: 59 * * * *
+  #     desiredReplicas: "0"
