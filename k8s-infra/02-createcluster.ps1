@@ -14,7 +14,8 @@ az aks create --resource-group $env:resourceGroupName `
               --max-count 3 `
               --network-plugin azure `
               --assign-identity $env:miResourceId `
-              --attach-acr $env:registryName
+              --attach-acr $env:registryName `
+              --disable-local-accounts
               #--network-plugin-mode overlay
 
               

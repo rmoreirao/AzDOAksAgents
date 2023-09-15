@@ -18,5 +18,5 @@ az keyvault secret set --vault-name $env:keyVaultName -n K8S-AZP-POOL --value $e
 
 # There's a specific user created by AKS to connect to the Key Vault: 
 # https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-identity-access#access-with-a-user-assigned-managed-identity
-$secredtUserId=$(az aks show -g $env:ResourceGroupName -n $env:aksClusterManagedIdentityName --query addonProfiles.azureKeyvaultSecretsProvider.identity.clientId -o tsv)
+$secredtUserId=$(az aks show -g $env:ResourceGroupName -n $env:clusterName --query addonProfiles.azureKeyvaultSecretsProvider.identity.clientId -o tsv)
 az keyvault set-policy -n $env:keyVaultName --secret-permissions get --spn $secredtUserId
